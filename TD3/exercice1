@@ -1,21 +1,130 @@
-#include<stdio.h> 
-/* Definition de la structure d’un element de la lsite */ 
-struct Element{ 
- int val; 
- struct Element *suivant; 
- }; 
- typedef struct Element LISTE; 
- int InsererElementEnTete(LISTE **L, int valeur) 
- { 
- LISTE * element = NULL; 
- element = (LISTE*) malloc(sizeof(LISTE)); 
- if (element == NULL){ 
-  printf("Probleme d’allocation memoire\n"); 
-  return 0; 
- } 
- element->val = valeur; 
- element->suivant = *L; 
- *L = element; 
- return 1; 
+#include<stdio.h>
+#include<stdlib.h>
+
+/* Definition de la structure d'un élément de la liste */
+struct Element {
+    int val;
+    struct Element *suivant;
+};
+typedef struct Element LISTE;
+
+/* Insère un élément en tête de la liste */
+/* Retourne 1 si l'insertion réussit, 0 sinon */
+/* La complexité : O(1) */
+int InsererElementEnTete(LISTE **L, int valeur) 
+{
+    LISTE *element = NULL;
+    
+    /* Allouer la mémoire pour le nouvel élément */
+    element = (LISTE*) malloc(sizeof(LISTE));
+    if (element == NULL) {
+        printf("Problème d'allocation mémoire\n");
+        return 0;  /* Échec de l'allocation */
+    }
+    
+    /* Initialiser le nouvel élément */
+    element->val = valeur;
+    element->suivant = *L;  /* Le nouvel élément pointe vers l'ancienne tête */
+    *L = element;           /* La tête devient le nouvel élément */
+    
+    return 1;  /* Insertion réussie */
+}
+
+/* ===== FONCTIONS AUXILIAIRES POUR LES TESTS ===== */
+
+/* Affiche tous les éléments de la liste */
+void AfficherListe(LISTE *L) {
+    if (L == NULL) {
+        printf("Liste vide\n");
+        return;
+    }
+    
+    LISTE *courant = L;
+    printf("Liste : ");
+    while (courant != NULL) {
+        printf("%d -> ", courant->val);
+        courant = courant->suivant;
+    }
+    printf("NULL\n");
+}
+
+/* Compte le nombre d'éléments dans la liste */
+int CompterElements(LISTE *L) {
+    int count = 0;
+    LISTE *courant = L;
+    while (courant != NULL) {
+        count++;
+        courant = courant->suivant;
+    }
+    return count;
+}
+
+/* Libère toute la mémoire de la liste */
+void LibererListe(LISTE **L) {
+    LISTE *courant = *L;
+    LISTE *suivant;
+    
+    while (courant != NULL) {
+        suivant = courant->suivant;
+        free(courant);
+        courant = suivant;
+    }
+    *L = NULL;
+}
+
+/* ===== FONCTION PRINCIPALE POUR TESTER ===== */
+int main() {
+    LISTE *L = NULL;
+    int resultat;
+    
+    printf("=== TEST D'INSERTION EN TÊTE ===\n\n");
+    
+    /* Affichage de la liste initiale (vide) */
+    printf("Liste initiale : ");
+    AfficherListe(L);
+    printf("Nombre d'éléments : %d\n\n", CompterElements(L));
+    
+    /* Insertion de la première valeur (10) */
+    printf("Insertion de 10 en tête...\n");
+    resultat = InsererElementEnTete(&L, 10);
+    printf("Résultat de l'insertion : %d (1 = succès)\n", resultat);
+    AfficherListe(L);
+    printf("Nombre d'éléments : %d\n\n", CompterElements(L));
+    
+    /* Insertion de la deuxième valeur (20) */
+    printf("Insertion de 20 en tête...\n");
+    resultat = InsererElementEnTete(&L, 20);
+    printf("Résultat de l'insertion : %d\n", resultat);
+    AfficherListe(L);
+    printf("Nombre d'éléments : %d\n\n", CompterElements(L));
+    
+    /* Insertion de la troisième valeur (30) */
+    printf("Insertion de 30 en tête...\n");
+    resultat = InsererElementEnTete(&L, 30);
+    printf("Résultat de l'insertion : %d\n", resultat);
+    AfficherListe(L);
+    printf("Nombre d'éléments : %d\n\n", CompterElements(L));
+    
+    /* Insertion de la quatrième valeur (40) */
+    printf("Insertion de 40 en tête...\n");
+    resultat = InsererElementEnTete(&L, 40);
+    printf("Résultat de l'insertion : %d\n", resultat);
+    AfficherListe(L);
+    printf("Nombre d'éléments : %d\n\n", CompterElements(L));
+    
+    /* Insertion d'une valeur négative */
+    printf("Insertion de -5 en tête...\n");
+    resultat = InsererElementEnTete(&L, -5);
+    printf("Résultat de l'insertion : %d\n", resultat);
+    AfficherListe(L);
+    printf("Nombre d'éléments : %d\n\n", CompterElements(L));
+    
+    /* Libération de la mémoire */
+    printf("Libération de la mémoire...\n");
+    LibererListe(&L);
+    printf("Après libération : ");
+    AfficherListe(L);
+    
+    return 0;
 } 
 /*La complexit´e : O(1)*/
