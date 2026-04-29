@@ -1,24 +1,124 @@
-#include<stdio.h>  
-LISTE * FusionDe2ListesAlternance(LISTE *L1, LISTE * L2) {
- LISTE * ptr1 = L1, *ptr2 = L2, *res = NULL; 
- if (L1 == NULL) return L2; 
- else if (L2 == NULL) return L1; 
- while(ptr1 && ptr2) 
- { 
-  InsererElementEnFin(&res,ptr1->val); 
-  InsererElementEnFin(&res, ptr2->val); 
-  ptr1 = ptr1->suivant; 
-  ptr2 = ptr2->suivant; 
- } 
- while (ptr1) 
- { 
-  InsererElementEnFin(&res, ptr1->val); 
-  ptr1 = ptr1->suivant; 
- } 
- while (ptr2) 
- { 
-  InsererElementEnFin(&res, ptr2->val); 
-  ptr2 = ptr2->suivant; 
- } 
- return res; 
+#include<stdio.h>
+#include<stdlib.h>
+
+/* Structure d'un nœud de liste chaînée */
+typedef struct liste {
+    int val;
+    struct liste *suivant;
+} LISTE;
+
+/* Insère un élément à la fin de la liste */
+void InsererElementEnFin(LISTE **head, int valeur) {
+    /* Créer un nouveau nœud */
+    LISTE *nouveau = (LISTE*)malloc(sizeof(LISTE));
+    if (nouveau == NULL) {
+        printf("Erreur d'allocation mémoire\n");
+        exit(1);
+    }
+    nouveau->val = valeur;
+    nouveau->suivant = NULL;
+    
+    /* Si la liste est vide, le nouveau nœud devient la tête */
+    if (*head == NULL) {
+        *head = nouveau;
+        return;
+    }
+    
+    /* Sinon, parcourir jusqu'à la fin */
+    LISTE *courant = *head;
+    while (courant->suivant != NULL) {
+        courant = courant->suivant;
+    }
+    courant->suivant = nouveau;
+}
+
+/* Fusionne deux listes en alternance (un élément de L1, puis un de L2, etc.) */
+LISTE * FusionDe2ListesAlternance(LISTE *L1, LISTE *L2) {
+    LISTE *ptr1 = L1, *ptr2 = L2, *res = NULL;
+    
+    /* Cas particuliers : si l'une des listes est vide */
+    if (L1 == NULL) 
+        return L2;
+    else if (L2 == NULL) 
+        return L1;
+    
+    /* Alterner les éléments des deux listes tant qu'elles ont des éléments */
+    while (ptr1 && ptr2) {
+        InsererElementEnFin(&res, ptr1->val);   /* Ajouter élément de L1 */
+        InsererElementEnFin(&res, ptr2->val);   /* Ajouter élément de L2 */
+        ptr1 = ptr1->suivant;                   /* Avancer dans L1 */
+        ptr2 = ptr2->suivant;                   /* Avancer dans L2 */
+    }
+    
+    /* Ajouter les éléments restants de L1 (si L1 est plus longue) */
+    while (ptr1) {
+        InsererElementEnFin(&res, ptr1->val);
+        ptr1 = ptr1->suivant;
+    }
+    
+    /* Ajouter les éléments restants de L2 (si L2 est plus longue) */
+    while (ptr2) {
+        InsererElementEnFin(&res, ptr2->val);
+        ptr2 = ptr2->suivant;
+    }
+    
+    return res;
+}
+
+/* Fonction pour afficher une liste */
+void AfficherListe(LISTE *L) {
+    LISTE *courant = L;
+    while (courant != NULL) {
+        printf("%d -> ", courant->val);
+        courant = courant->suivant;
+    }
+    printf("NULL\n");
+}
+
+/* Fonction pour libérer la mémoire d'une liste */
+void LiberationListe(LISTE **L) {
+    LISTE *courant = *L;
+    LISTE *suivant;
+    
+    while (courant != NULL) {
+        suivant = courant->suivant;
+        free(courant);
+        courant = suivant;
+    }
+    *L = NULL;
+}
+
+/* Fonction principale pour tester */
+int main() {
+    /* Créer la première liste : 1 -> 3 -> 5 -> 7 */
+    LISTE *L1 = NULL;
+    InsererElementEnFin(&L1, 1);
+    InsererElementEnFin(&L1, 3);
+    InsererElementEnFin(&L1, 5);
+    InsererElementEnFin(&L1, 7);
+    
+    /* Créer la deuxième liste : 2 -> 4 -> 6 */
+    LISTE *L2 = NULL;
+    InsererElementEnFin(&L2, 2);
+    InsererElementEnFin(&L2, 4);
+    InsererElementEnFin(&L2, 6);
+    
+    printf("Liste L1 : ");
+    AfficherListe(L1);
+    
+    printf("Liste L2 : ");
+    AfficherListe(L2);
+    
+    /* Fusionner les deux listes en alternance */
+    LISTE *L3 = FusionDe2ListesAlternance(L1, L2);
+    
+    printf("Liste fusionnée (alternance) : ");
+    AfficherListe(L3);
+    
+    /* Libérer la mémoire */
+    LiberationListe(&L1);
+    LiberationListe(&L2);
+    LiberationListe(&L3);
+    
+    return 0;
 }
