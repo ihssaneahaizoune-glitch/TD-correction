@@ -1,3 +1,4 @@
+#include<stdio.h> 
 /* Definition de la structure d’un element de la lsite */ 
 struct Element{ 
  int val; 
