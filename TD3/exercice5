@@ -1,0 +1,10 @@
+void DestructionListe(LISTE **L) 
+{ 
+  LISTE *ptr; 
+  if (*L == NULL) exit(0); 
+  while (*L != NULL){ 
+    ptr = *L; 
+    *L = (*L)->suivant; 
+    free(ptr); 
+ } 
+}
