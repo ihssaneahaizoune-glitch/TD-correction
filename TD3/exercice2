@@ -1,11 +1,133 @@
-#include<stdio.h> 
+#include<stdio.h>
+#include<stdlib.h>
+
+/* Structure d'un nœud de liste chaînée */
+typedef struct liste {
+    int val;
+    struct liste *suivant;
+} LISTE;
+
+/* Recherche une valeur dans la liste chaînée */
+/* Retourne 1 si la valeur est trouvée, 0 sinon */
+/* Complexité : O(n) dans le pire des cas */
 int RechercherValeur(LISTE *L, int valeur) 
-{ 
- LISTE *ptr = L; 
- while (ptr){ 
-  if (ptr->val == valeur) return 1; 
-   ptr = ptr->suivant; 
- } 
-return 0; 
-} 
-/*Complexite: O(n)*/
+{
+    LISTE *ptr = L;
+    
+    /* Parcourir toute la liste jusqu'à trouver la valeur */
+    while (ptr) {
+        if (ptr->val == valeur)
+            return 1;  /* Valeur trouvée */
+        ptr = ptr->suivant;
+    }
+    
+    return 0;  /* Valeur non trouvée */
+}
+
+/* ===== FONCTIONS AUXILIAIRES POUR LES TESTS ===== */
+
+/* Insère un élément au début de la liste */
+void InsererElementEnTete(LISTE **head, int valeur) {
+    LISTE *nouveau = (LISTE*)malloc(sizeof(LISTE));
+    if (nouveau == NULL) {
+        printf("Erreur d'allocation mémoire\n");
+        exit(1);
+    }
+    nouveau->val = valeur;
+    nouveau->suivant = *head;
+    *head = nouveau;
+}
+
+/* Insère un élément à la fin de la liste */
+void InsererElementEnFin(LISTE **head, int valeur) {
+    LISTE *nouveau = (LISTE*)malloc(sizeof(LISTE));
+    if (nouveau == NULL) {
+        printf("Erreur d'allocation mémoire\n");
+        exit(1);
+    }
+    nouveau->val = valeur;
+    nouveau->suivant = NULL;
+    
+    if (*head == NULL) {
+        *head = nouveau;
+        return;
+    }
+    
+    LISTE *courant = *head;
+    while (courant->suivant != NULL) {
+        courant = courant->suivant;
+    }
+    courant->suivant = nouveau;
+}
+
+/* Affiche tous les éléments de la liste */
+void AfficherListe(LISTE *L) {
+    if (L == NULL) {
+        printf("Liste vide\n");
+        return;
+    }
+    
+    LISTE *courant = L;
+    printf("Liste : ");
+    while (courant != NULL) {
+        printf("%d -> ", courant->val);
+        courant = courant->suivant;
+    }
+    printf("NULL\n");
+}
+
+/* Libère toute la mémoire de la liste */
+void LibererListe(LISTE **L) {
+    LISTE *courant = *L;
+    LISTE *suivant;
+    
+    while (courant != NULL) {
+        suivant = courant->suivant;
+        free(courant);
+        courant = suivant;
+    }
+    *L = NULL;
+}
+
+/* ===== FONCTION PRINCIPALE POUR TESTER ===== */
+int main() {
+    LISTE *L = NULL;
+    
+    /* Création d'une liste d'exemple : 10 -> 20 -> 30 -> 40 -> 50 */
+    InsererElementEnFin(&L, 10);
+    InsererElementEnFin(&L, 20);
+    InsererElementEnFin(&L, 30);
+    InsererElementEnFin(&L, 40);
+    InsererElementEnFin(&L, 50);
+    
+    AfficherListe(L);
+    
+    printf("\n=== TESTS DE RECHERCHE ===\n");
+    
+    /* Test 1 : Valeur présente (au début) */
+    printf("Recherche de 10 : %d (1 = trouvé, 0 = non trouvé)\n", RechercherValeur(L, 10));
+    
+    /* Test 2 : Valeur présente (au milieu) */
+    printf("Recherche de 30 : %d\n", RechercherValeur(L, 30));
+    
+    /* Test 3 : Valeur présente (à la fin) */
+    printf("Recherche de 50 : %d\n", RechercherValeur(L, 50));
+    
+    /* Test 4 : Valeur absente */
+    printf("Recherche de 99 : %d\n", RechercherValeur(L, 99));
+    
+    /* Test 5 : Valeur négative absente */
+    printf("Recherche de -5 : %d\n", RechercherValeur(L, -5));
+    
+    /* Test 6 : Liste vide */
+    printf("\n=== TEST SUR LISTE VIDE ===\n");
+    LISTE *L2 = NULL;
+    AfficherListe(L2);
+    printf("Recherche de 10 sur liste vide : %d\n", RechercherValeur(L2, 10));
+    
+    /* Libération de la mémoire */
+    LibererListe(&L);
+    
+    return 0;
+}
+/* complexite o(n)*/
