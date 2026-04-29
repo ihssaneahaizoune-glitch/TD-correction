@@ -1,0 +1,104 @@
+#include<stdio.h> 
+#include<stdlib.h> 
+
+typedef struct stack { 
+    int data; 
+    struct stack *next; 
+} STACK; 
+
+/* Empiler un élément sur la pile */ 
+void push(STACK **head, int value) { 
+    /* créer un nouveau nœud */ 
+    STACK *node = NULL; 
+    node = (STACK*)malloc(sizeof(STACK)); 
+    if (node == NULL) { 
+        fputs("Error: no space available for node\n", stderr); 
+        abort(); 
+    } else { 
+        /* initialisation du nœud */ 
+        node->data = value; 
+        /* insertion en tête de la liste */ 
+        if (*head == NULL) 
+            node->next = NULL; 
+        else 
+            node->next = *head; 
+        *head = node; 
+    } 
+} 
+
+/* Dépiler un élément de la pile */ 
+int pop(STACK **head) { 
+    int value; 
+    if (*head == NULL) { /* pile est vide */ 
+        fputs("Error: stack underflow\n", stderr); 
+        abort(); 
+    } else { /* dépiler un élément */ 
+        STACK *top = *head; 
+        value = top->data; 
+        *head = top->next; 
+        free(top); 
+        return value; 
+    } 
+} 
+
+/* PairImpair: sépare les nombres pairs et impairs, met les impairs d'abord puis les pairs */ 
+STACK* PairImpair(STACK *P1) { 
+    STACK *P2 = NULL, *P3 = NULL; 
+    int val; 
+    
+    /* Séparer les impairs et les pairs dans différentes piles */ 
+    while (P1 != NULL) { 
+        val = pop(&P1); 
+        if (val % 2 == 0) 
+            push(&P2, val);  /* les pairs vont dans P2 */ 
+        else 
+            push(&P3, val);  /* les impairs vont dans P3 */ 
+    } 
+    
+    /* Déplacer les impairs de P3 vers P2 pour restaurer l'ordre original */ 
+    while (P3 != NULL) { 
+        val = pop(&P3); 
+        push(&P2, val); 
+    } 
+    
+    return P2; 
+} 
+
+/* AffichePile: affiche la pile du sommet vers le bas */ 
+void AffichePile(STACK *P) { 
+    while (P != NULL) { 
+        printf("%d\t", P->data);  
+        P = P->next; 
+    } 
+    printf("\n"); 
+} 
+
+/* Libérer la mémoire de la pile */ 
+void LibererPile(STACK **head) { 
+    while (*head != NULL) { 
+        pop(head); 
+    } 
+} 
+
+int main() { 
+    int i; 
+    STACK *P1 = NULL, *P2 = NULL; 
+    
+    /* Empiler les nombres 1 à 9 dans P1 */ 
+    for (i = 1; i < 10; i++) 
+        push(&P1, i); 
+    
+    printf("Pile originale (du sommet vers le bas):\n"); 
+    AffichePile(P1); 
+    
+    /* Séparer les pairs et impairs */ 
+    P2 = PairImpair(P1); 
+    
+    printf("Après PairImpair (impairs d'abord, puis pairs):\n"); 
+    AffichePile(P2); 
+    
+    /* Libérer la mémoire */ 
+    LibererPile(&P2); 
+    
+    return 0; 
+}
