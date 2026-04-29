@@ -1,0 +1,31 @@
+int SuppressionValeurMin(LISTE **L) { 
+ LISTE * ptr = *L, *pMin=NULL, *pPrec = NULL; 
+ int minim; 
+ if (!ptr) /* liste vide */ 
+  return 0; 
+ else if (!ptr->suivant) /* taille de liste = 1*/ 
+{ 
+*L = NULL; 
+free(ptr); 
+return 1; 
+} 
+minim = ptr->val; pMin = NULL; 
+while (ptr->suivant){ /*chercher le min et sa position ds la liste*/ 
+ if (minim > ptr->suivant->val){ 
+  minim = ptr->suivant->val; 
+  pMin = ptr; 
+ } 
+ ptr = ptr->suivant; 
+} 
+if (!pMin){ 
+ ptr = *L; 
+ *L = (*L)->suivant; 
+ free(ptr); 
+ return 1; 
+} else{ 
+ ptr = pMin->suivant; 
+ pMin->suivant = pMin->suivant->suivant; 
+ free(ptr); 
+ return 1; 
+} 
+}
