@@ -1,0 +1,197 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+/* structure de la pile */
+typedef struct stack {
+    char data;
+    struct stack *next;
+} STACK;
+
+/* Empiler un caractere */
+void push(STACK **head, char value) {
+    /* créer un nouveau nœud */
+    STACK *node = NULL;
+    node = (STACK*)malloc(sizeof(STACK));
+    if (node == NULL) {
+        fputs("Error: no space available for node\n", stderr);
+        abort();
+    } else {
+        /* initialisation */
+        node->data = value;
+        /* insertion en tête */
+        if (*head == NULL)
+            node->next = NULL;
+        else
+            node->next = *head;
+        *head = node;
+    }
+}
+
+/* Dépiler un caractère */
+char pop(STACK **head) {
+    char value;
+    if (*head == NULL) { /* pile est vide */
+        fputs("Error: stack underflow\n", stderr);
+        abort();
+    } else { /* dépiler un élément */
+        STACK *top = *head;
+        value = top->data;
+        *head = top->next;
+        free(top);
+        return value;
+    }
+}
+
+/* structure d'un élément (nœud) de la file */
+struct queue_node {
+    struct queue_node *next;
+    char data;
+};
+
+/* structure de la file */
+struct queue {
+    struct queue_node *first;
+    struct queue_node *last;
+};
+
+/* Enfiler (rajouter) un élément */
+int enqueue(struct queue *q, const char value) {
+    struct queue_node *node = NULL;
+    node = (struct queue_node *)malloc(sizeof(struct queue_node));
+    if (node == NULL) {
+        printf("Problème d'allocation mémoire\n");
+        return 1;
+    }
+    node->data = value;
+    node->next = NULL;
+    
+    if (q->first == NULL) {
+        q->first = q->last = node;
+    } else {
+        q->last->next = node;
+        q->last = node;
+    }
+    return 0;
+}
+
+/* Défiler (supprimer) un élément */
+int dequeue(struct queue *q, char *value) {
+    if (!q->first) { /* test si la file est vide */
+        *value = 0;
+        return 1;
+    }
+    /* récupérer la valeur du nœud supprimé */
+    *value = q->first->data;
+    /* récupérer l'adresse du nœud supprimé */
+    struct queue_node *tmp = q->first;
+    
+    if (q->first == q->last) {
+        q->first = q->last = NULL;
+    } else {
+        q->first = q->first->next;
+    }
+    free(tmp); /* libération de l'espace occupé par le nœud supprimé */
+    return 0;
+}
+
+/* la fonction EcrireMessage : convertit une chaîne en file */
+struct queue* EcrireMessage(char chaine[]) {
+    int i, taille = strlen(chaine);
+    struct queue *q = NULL;
+    
+    q = (struct queue *)malloc(sizeof(struct queue));
+    if (!q) {
+        printf("Prob allocation mem\n");
+        exit(0);
+    }
+    q->first = q->last = NULL;
+    
+    for (i = 0; i < taille; i++)
+        enqueue(q, chaine[i]);
+    
+    return q;
+}
+
+/* Fonction qui libère la mémoire de la pile */
+void LibererPile(STACK **head) {
+    while (*head != NULL) {
+        pop(head);
+    }
+}
+
+/* Fonction qui libère la mémoire de la file */
+void LibererFile(struct queue *q) {
+    char val;
+    while (q->first != NULL) {
+        dequeue(q, &val);
+    }
+    free(q);
+}
+
+/* Palindrome ? Vérifie si une chaîne est un palindrome */
+int EstPalindrome(char chaine[]) {
+    int t1 = strlen(chaine) % 2;  /* 1 si longueur impaire, 0 si paire */
+    int t2 = strlen(chaine) / 2;  /* moitié de la longueur */
+    int i;
+    char val, c1, c2;
+    STACK *p = NULL;
+    struct queue *Q;
+    
+    /* Écrire la chaîne dans une file */
+    Q = EcrireMessage(chaine);
+    
+    /* Enfiler la première moitié des caractères dans la pile */
+    for (i = 0; i < t2; i++) {
+        dequeue(Q, &val);
+        push(&p, val);
+    }
+    
+    /* Si la longueur est impaire, ignorer le caractère du milieu */
+    if (t1 != 0)
+        dequeue(Q, &val);
+    
+    /* Comparer la deuxième moitié avec la pile (première moitié inversée) */
+    for (i = 0; i < t2; i++) {
+        dequeue(Q, &c1);
+        c2 = pop(&p);
+        if (c1 != c2) {
+            LibererFile(Q);
+            LibererPile(&p);
+            return 0;  /* n'est pas un palindrome */
+        }
+    }
+    
+    /* Libérer la mémoire */
+    LibererFile(Q);
+    LibererPile(&p);
+    
+    return 1;  /* est un palindrome */
+}
+
+/* Fonction principale pour tester */
+int main() {
+    char chaine1[] = "radar";
+    char chaine2[] = "bonjour";
+    char chaine3[] = "ressasser";
+    
+    printf("Test avec '%s' : ", chaine1);
+    if (EstPalindrome(chaine1))
+        printf("est un palindrome\n");
+    else
+        printf("n'est pas un palindrome\n");
+    
+    printf("Test avec '%s' : ", chaine2);
+    if (EstPalindrome(chaine2))
+        printf("est un palindrome\n");
+    else
+        printf("n'est pas un palindrome\n");
+    
+    printf("Test avec '%s' : ", chaine3);
+    if (EstPalindrome(chaine3))
+        printf("est un palindrome\n");
+    else
+        printf("n'est pas un palindrome\n");
+    
+    return 0;
+}
