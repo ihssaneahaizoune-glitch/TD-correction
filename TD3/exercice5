@@ -1,12 +1,16 @@
-#include<stdio.h> 
-
+/* DestructionListe : libère toute la mémoire allouée pour une liste chaînée */
 void DestructionListe(LISTE **L) 
-{ 
-  LISTE *ptr; 
-  if (*L == NULL) exit(0); 
-  while (*L != NULL){ 
-    ptr = *L; 
-    *L = (*L)->suivant; 
-    free(ptr); 
- } 
+{
+    LISTE *courant = *L;
+    LISTE *suivant;
+    
+    /* Parcourir toute la liste et libérer chaque nœud */
+    while (courant != NULL) {
+        suivant = courant->next;  /* sauvegarder l'adresse du nœud suivant */
+        free(courant);             /* libérer le nœud courant */
+        courant = suivant;         /* passer au nœud suivant */
+    }
+    
+    /* Mettre le pointeur de tête à NULL */
+    *L = NULL;
 }
