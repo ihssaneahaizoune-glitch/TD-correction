@@ -1,3 +1,4 @@
+#include<stdio.h>  
 LISTE * FusionDe2ListesAlternance(LISTE *L1, LISTE * L2) {
  LISTE * ptr1 = L1, *ptr2 = L2, *res = NULL; 
  if (L1 == NULL) return L2; 
