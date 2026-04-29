@@ -1,3 +1,4 @@
+#include<stdio.h> 
 int SuppressionValeurMin(LISTE **L) { 
  LISTE * ptr = *L, *pMin=NULL, *pPrec = NULL; 
  int minim; 
