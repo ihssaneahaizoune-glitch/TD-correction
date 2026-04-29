@@ -1,0 +1,23 @@
+LISTE * FusionDe2ListesAlternance(LISTE *L1, LISTE * L2) {
+ LISTE * ptr1 = L1, *ptr2 = L2, *res = NULL; 
+ if (L1 == NULL) return L2; 
+ else if (L2 == NULL) return L1; 
+ while(ptr1 && ptr2) 
+ { 
+  InsererElementEnFin(&res,ptr1->val); 
+  InsererElementEnFin(&res, ptr2->val); 
+  ptr1 = ptr1->suivant; 
+  ptr2 = ptr2->suivant; 
+ } 
+ while (ptr1) 
+ { 
+  InsererElementEnFin(&res, ptr1->val); 
+  ptr1 = ptr1->suivant; 
+ } 
+ while (ptr2) 
+ { 
+  InsererElementEnFin(&res, ptr2->val); 
+  ptr2 = ptr2->suivant; 
+ } 
+ return res; 
+}
