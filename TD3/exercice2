@@ -1,0 +1,10 @@
+int RechercherValeur(LISTE *L, int valeur) 
+{ 
+ LISTE *ptr = L; 
+ while (ptr){ 
+  if (ptr->val == valeur) return 1; 
+   ptr = ptr->suivant; 
+ } 
+return 0; 
+} 
+/*Complexite: O(n)*/
