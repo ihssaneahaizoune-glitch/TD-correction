@@ -1,0 +1,20 @@
+/* Definition de la structure d’un element de la lsite */ 
+struct Element{ 
+int val; 
+struct Element *suivant; 
+}; 
+typedef struct Element LISTE; 
+int InsererElementEnTete(LISTE **L, int valeur) 
+{ 
+LISTE * element = NULL; 
+element = (LISTE*) malloc(sizeof(LISTE)); 
+if (element == NULL){ 
+printf("Probleme d’allocation memoire\n"); 
+return 0; 
+} 
+element->val = valeur; 
+element->suivant = *L; 
+*L = element; 
+return 1; 
+} 
+/*La complexit´e : O(1)*/
